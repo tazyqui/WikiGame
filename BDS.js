@@ -31,12 +31,6 @@ class Queue {
     // return true if the queue is empty.
     return this.items.length == 0;
   }
-  // printQueue function
-  printQueue() {
-    let str = "";
-    for (let i = 0; i < this.items.length; i++) str += this.items[i] + " ";
-    return str;
-  }
 }
 
 //get an array of links from a page
