@@ -451,6 +451,8 @@ async function BFS(src,dst){
         {
             //everything in the if cases has O(1) complexity in best case
             //and O(n) in worst case as per the look ups
+            //O(n) time will be used in most cases, as O(n) is present when pages don't exist, and we are always adding new pages
+            //and usually pages link to many more new pages
             let page = adj[i];
             if (page.toLowerCase() == dst.toLowerCase()){
                 dst = page;
