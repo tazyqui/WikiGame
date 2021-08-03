@@ -1,7 +1,7 @@
 /*
  *      Project 3
  *    Bryant Arias
- *   Vicente Cortez
+ *   Vicente Cortes
  *     Tan Nguyen
 */
 
@@ -160,6 +160,7 @@ var wikipediaAPI;   // Instance of the wikipedia API
 
 
 // Uses fetch API to fetch wiki links, backlinks, and search results
+//constant time throughout
 async function request(APIurl, params) {
     let url = APIurl + encodeParams(params);
 
@@ -224,7 +225,7 @@ class WikipediaAPI {
     }
 
     // Returns at most 500 backlinks that point to target page
-    // Used in get
+    // Used in get 
     async getBackLinkBatch(page, cont) {
         const response = await request(
             this.url,
@@ -256,6 +257,11 @@ class WikipediaAPI {
 
     // Returns all the links contained on a page
     // Uses getLinks function and API continue parameter
+    //will run multiple request if we hit limit of 500 pages,
+    // pages have usually less than 500 links, but stay in small range.
+    //this does not change when there are more articles or more dense ones
+    //reduces to constant time, which leaves our complexity at O(l)
+    // or the amount of linkes per page
     async getLinks(title) {
         let moreLinks = true;
         let cont = '||';
@@ -368,7 +374,8 @@ class Queue {
       return this.items.length == 0;
     }
 }
-
+//Queue class implemented with use of arrays
+//all functions are O(1) time,
 class Queue2
 {
     
@@ -402,21 +409,32 @@ class Queue2
  *    Breadth First Search Implementation
 */
 
+//this function takes in two strings and perfroms
+//BFS with thsoe two as source and destination
+//further explanations of complexities embedded in
+//Code snippets below: O(n^2*l + n) or O(n*l) worst/avg case or best
+//O(n*l), where links are expected to be much smaller than l
 async function BFS(src,dst){
     
+    //Code snippets below: O(1)
     const visited = new Map();
     const parents = new Map();
 
     var q = new Queue2();
 
+    //Code snippets below: vary, assume map functions are constant in best case
+    // and O(n) in average and worst
     q.push(src);
     visited.set(src,true);
 
 
     let whilecont = true;
 
+   //while loop breaks when we find path or we exhaust articles
+    ////While loop potentially loops through all articles in queue O(n)
     while (whilecont){
 
+        //complexity O(1)
         let u = q.front();
         q.pop();
         if (q.isEmpty()){
@@ -424,10 +442,15 @@ async function BFS(src,dst){
         }
 
         let adj = [];
+        //complexity O(l)
         adj = await wikipediaAPI.getLinks(u);
         let size = adj.length;
+
+        //looking through links, O(l * inside)
         for (let i = 0; i < size; i++)
         {
+            //everything in the if cases has O(1) complexity in best case
+            //and O(n) in worst case as per the look ups
             let page = adj[i];
             if (page.toLowerCase() == dst.toLowerCase()){
                 dst = page;
@@ -447,11 +470,14 @@ async function BFS(src,dst){
         }
     }
     
+    //path could be total articles, but since we look
+    //specifically for shortestpath => path <<< n pages
+    // all below are O(1) through reduction
     let path = [];
     path.push(dst);
     let parent = parents.get(dst);
 
-    while (parent != src){
+    while (parent != src || parent == undefined){
         path.push(parent);
         parent = parents.get(parent);
     }
@@ -467,6 +493,8 @@ async function BFS(src,dst){
 
 async function BDS(src, tgt) {
 
+    src = src.toLowerCase();
+    tgt = tgt.toLowerCase();
   let s_visited = {};
   let s_q = new Queue();
   let s_parent = {};
@@ -492,17 +520,15 @@ async function BDS(src, tgt) {
 
     let t_currentElement = t_q.dequeue();
     let t_get_List = await wikipediaAPI.getBackLinks(t_currentElement);
-      
-    //search through the links of of the foward list  
     if (!intersectNodeFound && s_get_List != []) {
       for (let i in s_get_List) {
         let neigh = s_get_List[i];
+        neigh = neigh.toLowerCase();
         if (!s_visited[neigh]) {
           s_visited[neigh] = true;
           s_parent[neigh] = s_currentElement;
           s_q.enqueue(neigh);
         }
-          //break if intersect node is found
         if (t_visited[neigh]) {
           intersectNode = neigh;
           intersectNodeFound = true;
@@ -512,16 +538,15 @@ async function BDS(src, tgt) {
       }
     }
 
-    //search throught the links of the reverse list
     if (!intersectNodeFound && t_get_List != []) {
       for (let i in t_get_List) {
         let neigh = t_get_List[i];
+        neigh = neigh.toLowerCase();
         if (!t_visited[neigh]) {
           t_visited[neigh] = true;
           t_parent[neigh] = t_currentElement;
           t_q.enqueue(neigh);
         }
-          //break if intersect node is found
         if (s_visited[neigh]) {
           intersectNode = neigh;
           intersectNodeFound = true;
@@ -546,7 +571,7 @@ async function BDS(src, tgt) {
         i = t_parent[i];
       }
 
-      //return an array containing the path in order;
+      //return path in console;
       return path;   
     }
   }
