@@ -492,6 +492,8 @@ async function BDS(src, tgt) {
 
     let t_currentElement = t_q.dequeue();
     let t_get_List = await wikipediaAPI.getBackLinks(t_currentElement);
+      
+    //search through the links of of the foward list  
     if (!intersectNodeFound && s_get_List != []) {
       for (let i in s_get_List) {
         let neigh = s_get_List[i];
@@ -500,6 +502,7 @@ async function BDS(src, tgt) {
           s_parent[neigh] = s_currentElement;
           s_q.enqueue(neigh);
         }
+          //break if intersect node is found
         if (t_visited[neigh]) {
           intersectNode = neigh;
           intersectNodeFound = true;
@@ -509,6 +512,7 @@ async function BDS(src, tgt) {
       }
     }
 
+    //search throught the links of the reverse list
     if (!intersectNodeFound && t_get_List != []) {
       for (let i in t_get_List) {
         let neigh = t_get_List[i];
@@ -517,6 +521,7 @@ async function BDS(src, tgt) {
           t_parent[neigh] = t_currentElement;
           t_q.enqueue(neigh);
         }
+          //break if intersect node is found
         if (s_visited[neigh]) {
           intersectNode = neigh;
           intersectNodeFound = true;
@@ -541,7 +546,7 @@ async function BDS(src, tgt) {
         i = t_parent[i];
       }
 
-      //return path in console;
+      //return an array containing the path in order;
       return path;   
     }
   }
