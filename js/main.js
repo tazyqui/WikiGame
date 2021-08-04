@@ -17,6 +17,9 @@ var BDSbutton = document.querySelector('#BDSbutton.button');
 var resetBtn = document.querySelector('#playAgainBtn');
 var loading = document.querySelector('.loadingScreen');
 var results = document.querySelector('.results');
+var srcAutocom = srcField.nextElementSibling;
+var tgtAutocom = tgtField.nextElementSibling;
+
 var executionTime = 0;
 
 // Creating list elements using results from api search
@@ -87,22 +90,45 @@ const inputChanged = async (evt) => {
 }
 
 // Hides the search suggestion box when the field is inactive or empty
-function hideSearchSuggestions() {
-    if ( srcField === document.activeElement && srcField.value != '') {
-        srcField.nextElementSibling.classList.remove('hide');
-    } else {
-        srcField.nextElementSibling.classList.add('hide');
-    }
-    if ( tgtField === document.activeElement && tgtField.value != '') {
-        tgtField.nextElementSibling.classList.remove('hide');
-    } else {
-        tgtField.nextElementSibling.classList.add('hide');
+function hideSearchSuggestions(e) {
+    console.log(e.target)
+    if(e.target != srcAutocom || e.target != tgtAutocom) {
+        if ( srcField === document.activeElement && srcField.value != '') {
+            srcField.nextElementSibling.classList.remove('hide');
+        } else {
+            srcField.nextElementSibling.classList.add('hide');
+        }
+        if ( tgtField === document.activeElement && tgtField.value != '') {
+            tgtField.nextElementSibling.classList.remove('hide');
+        } else {
+            tgtField.nextElementSibling.classList.add('hide');
+        }
+    }   
+    else {
+        
     }
 }
 
+// Autofill field with clicked suggestion
+srcAutocom.addEventListener('click', function (e) {
+    let icon = srcAutocom.nextElementSibling
+    icon.firstChild.classList.remove('fa-times');
+    icon.firstChild.classList.add('fa-check');
+    srcField.value = e.target.textContent;
+    srcAutocom.classList.add('hide');
+});
+
+tgtAutocom.addEventListener('click', function (e) { 
+    let icon = tgtAutocom.nextElementSibling
+    icon.firstChild.classList.remove('fa-times');
+    icon.firstChild.classList.add('fa-check');
+    tgtField.value = e.target.textContent;
+    tgtAutocom.classList.add('hide');
+ 
+});
+
 // Event listeners to trigger hidesearchsuggestions
-document.addEventListener('focusin', function () { hideSearchSuggestions() })
-document.addEventListener('focusout', function () { hideSearchSuggestions() })
+document.addEventListener('focusin', function (e) { hideSearchSuggestions(e) })
 
 // Event listeners for input fields
 srcField.addEventListener('input', inputChanged);
@@ -121,8 +147,7 @@ BFSbutton.addEventListener('click',
             executionTime = ((t1-t0) / 1000).toFixed(3);
             console.log("Execution time: " + ((t1-t0) / 1000).toFixed(3) + " seconds.");
             displayResults(path);
-            loading.classList.add('hide');
-            results.classList.remove('hide');
+
         }
     }
 );
@@ -140,8 +165,6 @@ BDSbutton.addEventListener('click',
             executionTime = ((t1-t0) / 1000).toFixed(3);
             console.log("Execution time: " + ((t1-t0) / 1000).toFixed(3) + " seconds.");
             displayResults(path);
-            loading.classList.add('hide');
-            results.classList.remove('hide');
         }
     }
 );
@@ -579,12 +602,13 @@ async function BDS(src, tgt) {
   }
 }
 
-
 /*
  *    Creating Result Items - Referenced Traversy Media Search App Youtube video
 */ 
 
 const displayResults = async (path) => {
+    loading.classList.add('hide');
+    results.classList.remove('hide');
     // Get page data for search results
     var resultArray = [];
     await Promise.all(path.map(async titles => {
@@ -600,32 +624,38 @@ const displayResults = async (path) => {
 
 const buildSearchResults = (resultArray) => {
     const searchResults = document.querySelector('.searchResults');
-    const line = document.createElement('div');
-    line.classList.add('line');
-    searchResults.append(line);
+
     resultArray.forEach(result => {
+        const line = document.createElement('div');
+        line.classList.add('line');
+        searchResults.append(line);
         const resultContents = document.createElement('div');
         resultContents.classList.add('resultContents');
         const resultItem = createResultItem(result, resultContents);
         const resultText = createResultText(result);
-        resultContents.append(resultText)
+        resultContents.append(resultText);
+        resultItem.append(resultContents);
         if (result.pageimage) {
             const resultImage = createResultImage(result);
-            resultItem.append(resultImage);
-        }
-        ;
-        resultItem.append(resultContents);
+            resultItem.insertBefore(resultImage, resultContents);
+        };
         const resultItemBox = document.createElement('div');
         resultItemBox.classList.add('resultItemBox');
         resultItemBox.append(resultItem);
         const link = document.createElement('a');
         link.href = `https://en.wikipedia.org/?curid=${result.pageid}`;
         link.target = '_blank';
+        link.classList.add("resultsLink");
         link.append(resultItemBox);
         searchResults.append(link);
+        const line2 = document.createElement('div');
+        line2.classList.add('line');
+        searchResults.append(line2);
     });
     const statText = document.querySelector('.timeElapsed');
     statText.textContent = `Finished in ${executionTime} seconds`;
+    const playAgain = document.querySelector('.endResults');
+    searchResults.append(playAgain);
 }
 
 const createResultItem = (result, resultContents) => {
@@ -673,5 +703,4 @@ const reorganizeResults = (resultArray, path) => {
     }
     console.log(orderedArray)
     return orderedArray;
-
 }
