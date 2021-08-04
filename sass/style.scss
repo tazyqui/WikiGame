@@ -1,5 +1,5 @@
 $search-bar-border: #e6e6e6;
-$background-color: #f0f0f0;
+$background-color: #ffffff;
 $background-box-color: #f0f0f0;
 $stats-color: #70757a;
 $icons-color: #969696;
@@ -142,43 +142,41 @@ img {
 }
 
 .logoResults {
-  position: absolute;
-  top: 5%;
-  right: 5%;
+  display: none;
+  @include mqw(1400px) {
+    position: absolute;
+    top: 5%;
+    right: 5%;
+  }
 }
 
 .results {
-  height: 100%;
+  @include flexColumn;
   width: 100%;
-  @include flexCenter;
+  height: 100%;
 }
 
 .searchResults {
-  padding-right: 100px;
-  width: 60%;
-  max-width: 1000px;
-  padding-top: 20px;
+  display: flex;
+  padding-top: 40px;
+  max-width: 97%;
+  margin: auto;
+  background-color: $background-box-color;
+  border-radius: 10px;
   @include flexColumn;
+}
 
-  h1 {
-    padding-top: 20px;
-    padding-bottom: 20px;
-    font-size: 1.5rem;
-  }
-  a {
-    width: 100%;
-    text-decoration: none;
-    color: $search-button-color;
-    padding: 20px;
-  }
+.resultsLink {
+  width: 90%;
+  max-width: 1400px;
+  text-decoration: none;
+  color: $search-button-color;
 }
 
 .resultItemBox {
   background: white;
   border-radius: 10px;
-  padding: 15px;
-  min-height: 100px;
-  height: auto;
+  min-height: 10%;
   width: 100%;
   position: relative;
   z-index: 1;
@@ -186,72 +184,73 @@ img {
 
 .line {
   background: $search-button-color;
-  height: 100%;
-  position: absolute;
-  top: 0px;
+  height: 20px;
   width: 5px;
   z-index: 0;
 }
 
 .resultItem {
   padding: 5px;
-  max-height: 100%;
+  display: flex;
 }
 
 .resultTitle {
   font-weight: bold;
+  font-size: 0.65rem;
 }
 
 .resultContents {
-  margin-left: auto;
   height: 100%;
 }
 
 .resultImage {
-  float: left;
-  max-height: 100%;
-  width: 100px;
-  padding-right: 15px;
-  padding-bottom: 10px;
-  
+  padding-left: 10px;
+  padding-right: 10px;
+  align-items: center;
+  position: relative;
   img {
-    width: 90%;
-    height: 90%;
-    display: block;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
   }
 }
 
 .resultText {
-  max-height: 100%;
+  height: 100%;
 }
 
 .resultDescription {
-  font-size: 0.9rem;
-  font-weight: 100;
-  text-overflow: ellipsis;
-  overflow: hidden;
+  font-size: 0.75rem;
 }
 
 .endResults {
-  height: 100%;
-  width: 35%;
+  display: flex;
+  z-index: 2;
   @include flexCenter;
+  padding-top: 30px;
 }
 
 .resetWrapper {
   @include flexColumn;
-  width: 15%;
-  position: absolute;
-  bottom: 40%;
+  width: 100%;
 }
 
 .playAgain {
-  width: 100%;
+  min-width: 150px;
+  width: 40%;
 }
 
 .timeElapsed {
   padding: 20px;
-  font-size: 0.9rem;
+  font-size: 0.7rem;
+}
+
+.resultHead {
+  background-color: $background-box-color;
+  z-index: 1;
+  font-size: 1.3rem;
+  font-weight: bold;
+  padding-bottom: 30px;
 }
 
 .resultPage {
@@ -344,15 +343,13 @@ input:focus::placeholder {
   position: absolute;
   top: 110px;
   z-index: 2;
-  pointer-events: none;
-  overflow-y: auto;
 }
 
 .autocom-box li {
   list-style: none;
   padding: 8px 8px;
   width: 100%;
-  cursor: default;
+  cursor: pointer;
   border-radius: 3px;
   font-size: 0.85rem;
   @include mqw(1500px) {
